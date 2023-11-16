@@ -63,11 +63,29 @@ public class SearchActivity extends AppCompatActivity {
         i.putExtra("STARTTIMESTAMP", from.getText() != null ? from.getText().toString() : "");
         i.putExtra("ENDTIMESTAMP", to.getText() != null ? to.getText().toString() : "");
         i.putExtra("KEYWORDS", keywords.getText() != null ? keywords.getText().toString() : "");
-        Log.d("checking1", Double.parseDouble(longitudeStart.getText().toString()) + " This is the result");
-        i.putExtra("LONGITUDESTART", from.getText() != null ? Double.parseDouble(longitudeStart.getText().toString()) : 0.0);
-        i.putExtra("LONGITUDEEND", from.getText() != null ? Double.parseDouble(longitudeEnd.getText().toString()) : 0.0);
-        i.putExtra("LATITUDESTART", from.getText() != null ? Double.parseDouble(latitudeStart.getText().toString()) : 0.0);
-        i.putExtra("LATITUDEEND", from.getText() != null ? Double.parseDouble(latitudeEnd.getText().toString()) : 0.0);
+
+
+        if (((EditText) findViewById(R.id.etLongitudeStart)).getText().toString().isEmpty()) {
+            ((EditText) findViewById(R.id.etLongitudeStart)).setText("0.0");
+        }
+
+        if(((EditText) findViewById(R.id.etLongitudeEnd)).getText().toString().isEmpty()) {
+            ((EditText) findViewById(R.id.etLongitudeEnd)).setText("0.0");
+        }
+
+        if (((EditText) findViewById(R.id.etLatitudeStart)).getText().toString().isEmpty()) {
+
+            ((EditText) findViewById(R.id.etLatitudeStart)).setText("0.0");
+        }
+
+        if (((EditText) findViewById(R.id.etLatitudeEnd)).getText().toString().isEmpty()) {
+            ((EditText) findViewById(R.id.etLatitudeEnd)).setText("0.0");
+        }
+//        Log.d("checking1", Double.parseDouble(longitudeStart.getText().toString()) + " This is the result");
+        i.putExtra("LONGITUDESTART", longitudeStart.getText() != null ? Double.parseDouble(longitudeStart.getText().toString()) : 0.0);
+        i.putExtra("LONGITUDEEND", longitudeEnd.getText() != null ? Double.parseDouble(longitudeEnd.getText().toString()) : 0.0);
+        i.putExtra("LATITUDESTART", latitudeStart.getText() != null ? Double.parseDouble(latitudeStart.getText().toString()) : 0.0);
+        i.putExtra("LATITUDEEND", latitudeEnd.getText() != null ? Double.parseDouble(latitudeEnd.getText().toString()) : 0.0);
         Log.d("catch2", "Before SharedPreferences");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Log.d("catch3", "After SharedPreferences");
