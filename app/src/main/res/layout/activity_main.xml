@@ -18,7 +18,7 @@
         android:layout_width="85dp"  android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="3dp" android:layout_marginEnd="194dp" android:layout_marginBottom="178dp"
-        android:onClick="takePhoto"  android:text="Snap"
+        android:onClick="takePhoto"  android:text="snap"
         app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@+id/btnNext"
         app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.786" />
@@ -27,7 +27,7 @@
         android:id="@+id/btnNext"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/btnSnap" android:layout_marginStart="194dp"
-        android:text="Next" android:onClick="scrollPhotos"
+        android:text="next" android:onClick="scrollPhotos"
         app:layout_constraintBottom_toTopOf="@+id/btnSearch" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnSnap" app:layout_constraintTop_toBottomOf="@+id/tvTimestamp" />
 
@@ -36,7 +36,7 @@
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_alignParentEnd="true" android:layout_alignParentBottom="true"
         android:layout_marginEnd="82dp" android:layout_marginBottom="15dp"
-        android:text="Prev" android:onClick="scrollPhotos"
+        android:text="prev" android:onClick="scrollPhotos"
         tools:layout_editor_absoluteX="0dp" tools:layout_editor_absoluteY="622dp" />
 
 
@@ -62,7 +62,7 @@
         android:id="@+id/btnSearch"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_alignStart="@+id/ivGallery" android:layout_alignParentBottom="true"
-        android:layout_marginBottom="18dp" android:text="Search"
+        android:layout_marginBottom="18dp" android:text="search"
         tools:layout_editor_absoluteX="291dp" tools:layout_editor_absoluteY="635dp"
         android:onClick="filter"/>
 
