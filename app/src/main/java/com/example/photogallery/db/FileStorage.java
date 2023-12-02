@@ -16,7 +16,7 @@ public class FileStorage {
     public FileStorage(Context context) {
         this.context = context;
     }
-    public ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, double longitude_start, double longitude_end, double latitude_start, double latitude_end) {
+    public ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, double latitude_start, double latitude_end, double longitude_start, double longitude_end) {
 //        File folder = new File(Environment.getExternalStorageDirectory()
 //                .getAbsolutePath(), "/Android/data/com.example.photogallery/files/Pictures");
 //        ArrayList<String> photos = new ArrayList<String>();
@@ -37,28 +37,28 @@ public class FileStorage {
         File[] fList = file.listFiles();
         if (fList != null) {
             for (File f : fList) {
-
-//                Log.d("fileNames Long", f.toString().split("_")[4]);
-//                Log.d("fileNames Lat", f.toString().split("_")[5]);
                 if (((startTimestamp == null && endTimestamp == null) ||
                         (f.lastModified() >= startTimestamp.getTime()
                                 && f.lastModified() <= endTimestamp.getTime())
-                ) && (keywords == "" || f.getPath().contains(keywords))) {
-                    if (((longitude_start == 0.0 &&
-                            longitude_end == 0.0) &&
-                            (latitude_start == 0.0 &&
-                                    latitude_end == 0.0)) ||
-                            ((Double.compare(longitude_start, Double.parseDouble(f.toString().split("_")[4])) < 0) &&
-                                    (Double.compare(longitude_end, Double.parseDouble(f.toString().split("_")[4])) > 0) ||
-                                    (Double.compare(latitude_start, Double.parseDouble(f.toString().split("_")[5])) < 0) &&
-                                            (Double.compare(latitude_end, Double.parseDouble(f.toString().split("_")[5])) > 0)
-                            )) {
-                        Log.d("error2", "you made it here");
+                ) && (keywords.equals("") || f.getPath().contains(keywords))) {
+//                    Log.d("fileNames Long", f.toString().split("_")[4]);
+//                    Log.d("fileNames Lat", f.toString().split("_")[5]);
+                    if (((latitude_start == 0.0 &&
+                            latitude_end == 0.0)) &&
+                            (longitude_start == 0.0 &&
+                                    longitude_end == 0.0)) {
                         photos.add(f.getPath());
-                    } else {
-                        Log.d("error1", "youre here");
+                    } else if (((Double.compare(latitude_start, Double.parseDouble(f.toString().split("_")[4])) < 0) &&
+                            (Double.compare(latitude_end, Double.parseDouble(f.toString().split("_")[4])) > 0)) &&
+                            ((Double.compare(longitude_start, Double.parseDouble(f.toString().split("_")[5])) < 0) &&
+                                    (Double.compare(longitude_end, Double.parseDouble(f.toString().split("_")[5])) > 0))) {
+//                        Log.d("error5", (Double.compare(longitude_start, Double.parseDouble(f.toString().split("_")[4])) < 0) + " this is supposedly true");
+//                        Log.d("error2", "you made it here");
                         photos.add(f.getPath());
                     }
+//                    else {
+//                        Log.d("error1", "youre here");
+//                    }
                 }
             }
         }

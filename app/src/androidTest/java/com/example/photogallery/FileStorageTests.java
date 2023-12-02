@@ -63,7 +63,7 @@ public class FileStorageTests {
         Log.d("start time1", startTimestamp + "");
         Log.d("end time1", endTimestamp + "");
         //Call the method specifying the test time window.
-        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "");
+        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "", 0.0, 0.0, 0.0, 0.0);
 
         Log.d("photos list1", photos + "");
 
@@ -97,14 +97,14 @@ public class FileStorageTests {
         Log.d("start time1", startTimestamp + "");
         Log.d("end time1", endTimestamp + "");
         //Call the method specifying the test time window.
-        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "hellothere");
+        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "aron", 0.0, 0.0, 0.0, 0.0);
 
         Log.d("photos list1", photos + "");
 
         //Verify that only one photo with the matching timestamp is found
-        assertEquals(1, photos.size());
+        assertEquals(2, photos.size());
         Log.d("photos0", photos.get(0) + "");
-        assertEquals(true, photos.get(0).contains("hellothere"));
+        assertEquals(true, photos.get(0).contains("aron"));
     }
 
     @Test /*Unit Test for findPhotos method */
@@ -131,12 +131,12 @@ public class FileStorageTests {
         Log.d("start time1", startTimestamp + "");
         Log.d("end time1", endTimestamp + "");
         //Call the method specifying the test time window.
-        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "");
+        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "", 0.0, 0.0, 0.0, 0.0);
 
         Log.d("photos list1", photos + "");
 
         //Verify that multiple photos are found
-        assertEquals(6, photos.size());
+        assertEquals(8, photos.size());
     }
 
     @Test /*Unit Test for findPhotos method */
@@ -163,16 +163,68 @@ public class FileStorageTests {
         Log.d("start time1", startTimestamp + "");
         Log.d("end time1", endTimestamp + "");
         //Call the method specifying the test time window.
-        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "bye");
+        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "project", 0.0, 0.0, 0.0, 0.0);
 
         Log.d("photos list1", photos + "");
 
         //Verify that only one photo with the matching timestamp is found
-        assertEquals(3, photos.size());
+        assertEquals(2, photos.size());
         Log.d("photos0", photos.get(0) + "");
-        assertEquals(true, photos.get(0).contains("bye"));
-        assertEquals(true, photos.get(1).contains("bye"));
-        assertEquals(true, photos.get(2).contains("bye"));
+        assertEquals(true, photos.get(0).contains("project"));
+        assertEquals(true, photos.get(1).contains("project"));
+    }
+
+    @Test
+    public void findLocationBasedPhotoTest() {
+
+        // Using the App Context create an instance of the FileStorage
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        FileStorage fs = new FileStorage(appContext);
+
+        Date startTimestamp = null, endTimestamp = null;
+        try {
+            Calendar calendar = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            startTimestamp = format.parse("20230928_000000");
+            endTimestamp = calendar.getTime();
+            calendar.setTime(startTimestamp);
+            calendar.add(Calendar.MINUTE, 1);
+
+        } catch (Exception ex) {
+            Log.d("photos1", "There are no photos in this");
+        }
+
+        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "", 40.0, 45.0, -74.0, -70.0) ;
+
+        //Verify that only one photo with the matching timestamp is found
+        assertEquals(2, photos.size());
+    }
+
+    @Test
+    public void findLocationBasedPhotoWithKeywordTest() {
+
+        // Using the App Context create an instance of the FileStorage
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        FileStorage fs = new FileStorage(appContext);
+
+        Date startTimestamp = null, endTimestamp = null;
+        try {
+            Calendar calendar = Calendar.getInstance();
+            DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            startTimestamp = format.parse("20230928_000000");
+            endTimestamp = calendar.getTime();
+            calendar.setTime(startTimestamp);
+            calendar.add(Calendar.MINUTE, 1);
+
+        } catch (Exception ex) {
+            Log.d("photos1", "There are no photos in this");
+        }
+
+        ArrayList<String> photos = fs.findPhotos(startTimestamp, endTimestamp, "project",  40.0, 45.0, -74.0, -70.0);
+
+        //Verify that only one photo with the matching timestamp is found
+        assertEquals(1, photos.size());
+        assertEquals(true, photos.get(0).contains("project"));
     }
 }
 

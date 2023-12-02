@@ -132,10 +132,10 @@ public class MainActivity extends AppCompatActivity {
 
         }
         Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longi = loc.getLongitude();
-        double lat = loc.getLatitude();
-        Log.d("Location1", "Longitude: " + longi + " Latitude: " + lat + "_");
-        String imageFileName = "_caption_" + timeStamp + "_" + longi + "_" + lat + "_";
+        double latitude = loc.getLatitude();
+        double longitude = loc.getLongitude();
+//        Log.d("Location1", "Longitude: " + longi + " Latitude: " + lat + "_");
+        String imageFileName = "_caption_" + timeStamp + "_" + latitude + "_" + longitude + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
@@ -160,13 +160,13 @@ public class MainActivity extends AppCompatActivity {
                     endTimestamp = null;
                 }
                 String keywords = (String) data.getStringExtra("KEYWORDS");
-                double longitude_start = (Double) data.getDoubleExtra("LONGITUDESTART", 0.0);
-                double longitude_end = (Double) data.getDoubleExtra("LONGTIUDEEND", 0.0);
                 double latitude_start = (Double) data.getDoubleExtra("LATITUDESTART", 0.0);
                 double latitude_end = (Double) data.getDoubleExtra("LATITUDEEND", 0.0);
+                double longitude_start = (Double) data.getDoubleExtra("LONGITUDESTART", 0.0);
+                double longitude_end = (Double) data.getDoubleExtra("LONGTIUDEEND", 0.0);
 
                 index = 0;
-                photos = findPhotos(startTimestamp, endTimestamp, keywords, longitude_start, longitude_end, latitude_start, latitude_end);
+                photos = findPhotos(startTimestamp, endTimestamp, keywords, latitude_start, latitude_end, longitude_start, longitude_end);
 
                 if (photos.size() == 0) {
                     displayPhoto(null);
@@ -186,14 +186,14 @@ public class MainActivity extends AppCompatActivity {
         String[] attr = path.split("_");
         if (attr.length >= 3) {
             File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_" + attr[5] + "_" + attr[6]);
-            Log.d("updatePhotoName1", attr[4] + " should be longitude");
-            Log.d("updatePhotName2", attr[5] + " should be latitude");
+            Log.d("updatePhotoName1", attr[4] + " should be latitude");
+            Log.d("updatePhotName2", attr[5] + " should be longitude");
             File from = new File(path);
             from.renameTo(to);
         }
     }
 
-    private ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, double longitude_start, double longitude_end, double latitude_start, double latitude_end) {
+    private ArrayList<String> findPhotos(Date startTimestamp, Date endTimestamp, String keywords, double latitude_start, double latitude_end, double longitude_start, double longitude_end) {
         File file = new File(Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), "/Android/data/com.example.photogallery/files/Pictures");
         ArrayList<String> photos = new ArrayList<String>();
@@ -203,24 +203,25 @@ public class MainActivity extends AppCompatActivity {
                 if (((startTimestamp == null && endTimestamp == null) ||
                         (f.lastModified() >= startTimestamp.getTime()
                                 && f.lastModified() <= endTimestamp.getTime())
-                ) && (keywords == "" || f.getPath().contains(keywords))) {
-                    Log.d("fileNames Long", f.toString().split("_")[4]);
-                    Log.d("fileNames Lat", f.toString().split("_")[5]);
-                    if (((longitude_start == 0.0 &&
-                            longitude_end == 0.0) &&
-                            (latitude_start == 0.0 &&
-                                    latitude_end == 0.0))) {
+                ) && (keywords.equals("") || f.getPath().contains(keywords))) {
+//                    Log.d("fileNames Long", f.toString().split("_")[4]);
+//                    Log.d("fileNames Lat", f.toString().split("_")[5]);
+                    if (((latitude_start == 0.0 &&
+                            latitude_end == 0.0)) &&
+                            (longitude_start == 0.0 &&
+                                    longitude_end == 0.0)) {
                         photos.add(f.getPath());
-                    } else if (((Double.compare(longitude_start, Double.parseDouble(f.toString().split("_")[4])) < 0) &&
-                            (Double.compare(longitude_end, Double.parseDouble(f.toString().split("_")[4])) > 0)) &&
-                            ((Double.compare(latitude_start, Double.parseDouble(f.toString().split("_")[5])) < 0) &&
-                                    (Double.compare(latitude_end, Double.parseDouble(f.toString().split("_")[5])) > 0))) {
+                    } else if (((Double.compare(latitude_start, Double.parseDouble(f.toString().split("_")[4])) < 0) &&
+                            (Double.compare(latitude_end, Double.parseDouble(f.toString().split("_")[4])) > 0)) &&
+                            ((Double.compare(longitude_start, Double.parseDouble(f.toString().split("_")[5])) < 0) &&
+                                    (Double.compare(longitude_end, Double.parseDouble(f.toString().split("_")[5])) > 0))) {
 //                        Log.d("error5", (Double.compare(longitude_start, Double.parseDouble(f.toString().split("_")[4])) < 0) + " this is supposedly true");
 //                        Log.d("error2", "you made it here");
                         photos.add(f.getPath());
-                    } else {
-                        Log.d("error1", "youre here");
                     }
+//                    else {
+//                        Log.d("error1", "youre here");
+//                    }
                 }
             }
         }
