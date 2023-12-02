@@ -1,6 +1,8 @@
 package com.example.photogallery;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import androidx.test.InstrumentationRegistry;
@@ -11,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,8 +29,14 @@ public class SQLiteStorageTest {
         appContext = InstrumentationRegistry.getTargetContext();
         ss = new SQLiteStorage();
         int status = ss.init(appContext, "App.db");
-        status = ss.addPhoto("cafe", "2018-08-25 13:20:21", 40.94829666666667, -73.90721333333333,"test_cafe_2018-08-25 13:20:21_40.94829666666667_-73.90721333333333_12345.jpg");
-        status = ss.addPhoto("cafe", "2017-08-25 13:20:21", 40.94829666666667, -73.90721333333333, "test_cafe_2017-08-25 13:20:21_40.94829666666667_-73.90721333333333_54321.jpg");
+
+        Bitmap src = BitmapFactory.decodeFile("C:\\Users\\bkwan\\Desktop\\PhotoGallery\\app\\src\\main\\java\\com\\example\\photogallery\\image\\stock_person1.jpg");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        src.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        byte[] image = outputStream.toByteArray();
+
+        status = ss.addPhoto("cafe", "2018-08-25 13:20:21", 40.94829666666667, -73.90721333333333,"test_cafe_2018-08-25 13:20:21_40.94829666666667_-73.90721333333333_12345.jpg", image);
+        status = ss.addPhoto("cafe", "2017-08-25 13:20:21", 40.94829666666667, -73.90721333333333, "test_cafe_2017-08-25 13:20:21_40.94829666666667_-73.90721333333333_54321.jpg", image);
     }
     @Test
     public void TestSQLiteStorage() throws Exception {
