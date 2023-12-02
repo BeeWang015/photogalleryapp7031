@@ -52,65 +52,24 @@
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/tvLongitudeStart"
+        android:id="@+id/tvLatitudeStart"
+        android:text="@string/latitude_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tvLongitudeEnd"
+        android:layout_above="@+id/tvLatitudeEnd"
         android:layout_below="@+id/tvToDateTime"
         android:layout_marginTop="31dp"
         android:layout_marginBottom="20dp"
-        android:text="@string/longitude_start"
-        android:textSize="24sp" />
-
-    <EditText
-        android:id="@+id/etLongitudeStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/etLongitudeEnd"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="31dp"
-        android:layout_marginBottom="5dp"
-        android:layout_toEndOf="@+id/tvLongitudeStart"
-        android:ems="10"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/tvLongitudeEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tvKeywords"
-        android:layout_marginBottom="243dp"
-        android:text="@string/longitude_end"
-        android:textSize="24sp" />
-
-    <EditText
-        android:id="@+id/etLongitudeEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/etKeywords"
-        android:layout_marginStart="72dp"
-        android:layout_marginEnd="31dp"
-        android:layout_marginBottom="228dp"
-        android:layout_toEndOf="@+id/tvLongitudeEnd"
-        android:ems="10"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/tvLatitudeStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tvKeywords"
-        android:layout_marginBottom="173dp"
-        android:text="@string/latitude_start"
         android:textSize="24sp" />
 
     <EditText
         android:id="@+id/etLatitudeStart"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/etKeywords"
-        android:layout_marginStart="80dp"
-        android:layout_marginBottom="169dp"
+        android:layout_above="@+id/etLongitudeEnd"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="31dp"
+        android:layout_marginBottom="130dp"
         android:layout_toEndOf="@+id/tvLatitudeStart"
         android:ems="10"
         android:textSize="24sp" />
@@ -120,18 +79,59 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/tvKeywords"
-        android:layout_marginBottom="107dp"
+        android:layout_marginBottom="243dp"
         android:text="@string/latitude_end"
         android:textSize="24sp" />
 
     <EditText
         android:id="@+id/etLatitudeEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/etKeywords"
+        android:layout_marginStart="82dp"
+        android:layout_marginEnd="31dp"
+        android:layout_marginBottom="223dp"
+        android:layout_toEndOf="@+id/tvLatitudeEnd"
+        android:ems="10"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/tvLongitudeStart"
+        android:text="@string/longitude_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvKeywords"
+        android:layout_marginBottom="173dp"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/etLongitudeStart"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/etKeywords"
+        android:layout_marginStart="77dp"
+        android:layout_marginBottom="157dp"
+        android:layout_toEndOf="@+id/tvLatitudeStart"
+        android:ems="10"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/tvLongitudeEnd"
+        android:layout_above="@+id/tvKeywords"
+        android:text="@string/longitude_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="107dp"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/etLongitudeEnd"
         android:layout_width="151dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/etKeywords"
-        android:layout_marginStart="93dp"
-        android:layout_marginBottom="105dp"
-        android:layout_toEndOf="@+id/tvLatitudeEnd"
+        android:layout_marginStart="70dp"
+        android:layout_marginBottom="91dp"
+        android:layout_toEndOf="@+id/tvLongitudeEnd"
         android:ems="10"
         android:textSize="24sp" />
 

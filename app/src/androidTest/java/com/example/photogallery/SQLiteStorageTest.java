@@ -1,6 +1,7 @@
 package com.example.photogallery;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.test.InstrumentationRegistry;
 
@@ -25,14 +26,16 @@ public class SQLiteStorageTest {
         appContext = InstrumentationRegistry.getTargetContext();
         ss = new SQLiteStorage();
         int status = ss.init(appContext, "App.db");
-        status = ss.addPhoto("cafe", "2018-08-25 13:20:21", "test_ cafe_2018-08-25 13:20:21_12345.jpg");
-        status = ss.addPhoto("cafe", "2017-08-25 13:20:21", "test_cafe_2017-08-25 13:20:21_54321.jpg");
+        status = ss.addPhoto("cafe", "2018-08-25 13:20:21", 40.94829666666667, -73.90721333333333,"test_cafe_2018-08-25 13:20:21_40.94829666666667_-73.90721333333333_12345.jpg");
+        status = ss.addPhoto("cafe", "2017-08-25 13:20:21", 40.94829666666667, -73.90721333333333, "test_cafe_2017-08-25 13:20:21_40.94829666666667_-73.90721333333333_54321.jpg");
     }
     @Test
     public void TestSQLiteStorage() throws Exception {
         //Test keywords based search
-        ArrayList<String> photos = ss.findPhotos("", "", "cafe");
+        //public ArrayList<String> findPhotos(String startTimestamp, String endTimestamp, String keyword, double latitude_start, double latitude_end, double longitude_start, double longitude_end)
+        ArrayList<String> photos = ss.findPhotos("2017-08-25 00:00:00", "2018-08-26 00:00:00","cafe", 40, 42, -75, -70 );
         //Verify that two photos found with the specified keyword
+        Log.d("list_them", photos.get(0));
         assertEquals(2, photos.size());
         assertEquals(true, photos.get(0).contains("cafe"));
         assertEquals(true, photos.get(1).contains("cafe"));
@@ -48,15 +51,15 @@ public class SQLiteStorageTest {
             endTimestamp = calendar.getTime();
         } catch (Exception ex) { }
         //Call the method
-        photos = ss.findPhotos(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTimestamp), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTimestamp), "");
+        photos = ss.findPhotos(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTimestamp), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTimestamp), "cafe", 40, 42, -75, -70);
         //Verify that only one photo with the matching timestamp is found
         assertEquals(1, photos.size());
         assertEquals(true, photos.get(0).contains("2018-08-25 13:20:21"));
     }
     @After
     public void finalization() {
-        int status = ss.deletePhoto("test_cafe_2018-08-25 13:20:21_12345.jpg");
-        status = ss.deletePhoto("test_cafe_2017-08-25 13:20:21_54321.jpg");
+        int status = ss.deletePhoto("test_cafe_2018-08-25 13:20:21_40.94829666666667_-73.90721333333333_12345.jpg");
+        status = ss.deletePhoto("test_cafe_2017-08-25 13:20:21_40.94829666666667_-73.90721333333333_54321.jpg");
     }
 
 }

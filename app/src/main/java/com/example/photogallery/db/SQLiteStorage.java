@@ -13,7 +13,7 @@ public class SQLiteStorage {
         if(!db.isOpen()) { return -1; }
         db.beginTransaction();
         try{
-            db.execSQL("CREATE TABLE IF NOT EXISTS Photos (timestamp TEXT, caption TEXT, fullpath TEXT);");
+            db.execSQL("CREATE TABLE IF NOT EXISTS Photos (timestamp TEXT, caption TEXT, latitude float, longitude float, fullpath TEXT);");
             db.setTransactionSuccessful();
         } catch (Exception e) { return -1; }
         finally {
@@ -21,17 +21,20 @@ public class SQLiteStorage {
         }
         return 0;
     }
-    public ArrayList<String> findPhotos(String startTimestamp, String endTimestamp, String keyword) {
+    public ArrayList<String> findPhotos(String startTimestamp, String endTimestamp, String keyword, double latitude_start, double latitude_end, double longitude_start, double longitude_end) {
         ArrayList<String> photos = new ArrayList<String>();
         Cursor dbCursor = null;
         String query = null;
-        if(!db.isOpen() || (startTimestamp == "" && endTimestamp == "" && keyword == "")) {
+        if(!db.isOpen() || (startTimestamp .equals("") && endTimestamp.equals("") && keyword.equals("") && latitude_start == 0.0 && latitude_end == 0.0 && longitude_start == 0.0 && longitude_end == 0.0)) {
             return null;
         }
         if (keyword == "")
             query = "select fullpath from photos where timestamp between '"+ startTimestamp + "' and '" + endTimestamp + "';";
         else if (startTimestamp == "")
             query = "select fullpath from photos where caption like '%" + keyword + "%';";
+        else if (latitude_start == 0.0 && longitude_start == 0.0) {
+            query = "select fullpath from photos where caption like '%" + keyword + "%';";
+        }
         else
             query = "select fullpath from photos where timestamp between '"+ startTimestamp + "' and '" + endTimestamp +
                     "' and caption like '%" + keyword + "%';";
@@ -52,12 +55,12 @@ public class SQLiteStorage {
         }
         return  photos;
     }
-    public int addPhoto(String caption, String timestamp, String fullpath) {
+    public int addPhoto(String caption, String timestamp, double latitude, double longitude, String fullpath) {
         if(!db.isOpen()) { return -1; }
         db.beginTransaction();
         try{
-            String sqlStmt = "insert into photos (timestamp, caption, fullpath) values ('"
-                    + timestamp + "','" + caption +"','" + fullpath+"');";
+            String sqlStmt = "insert into photos (timestamp, caption, latitude, longitude, fullpath) values ('"
+                    + timestamp + "','" + caption + "', " + latitude + ", " + longitude + ",'" + fullpath+"');";
             db.execSQL(sqlStmt);
             db.setTransactionSuccessful();
         } catch (Exception e) { return -1; }
