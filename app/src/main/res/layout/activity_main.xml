@@ -5,40 +5,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <ImageView
-        android:id="@+id/ivGallery"
-        android:layout_width="356dp" android:layout_height="265dp"
-        android:layout_marginStart="23dp" android:layout_marginTop="39dp"
-        android:layout_marginEnd="32dp" android:layout_marginBottom="39dp"
-        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" app:srcCompat="@drawable/ic_launcher_foreground" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lLImageView">
+
+        <com.example.photogallery.Views.FramedImageView
+            android:id="@+id/fiv"
+            android:layout_marginLeft="80dp"
+            android:layout_width="300dp"
+            android:layout_height="320dp"
+            app:exampleColor="#33b5e5"
+            app:exampleDimension="24sp"
+            tools:ignore="MissingClass,MissingConstraints" />
+        <!--    <ImageView-->
+<!--        android:id="@+id/ivGallery"-->
+<!--        android:layout_width="356dp" android:layout_height="265dp"-->
+<!--        android:layout_marginStart="23dp" android:layout_marginTop="39dp"-->
+<!--        android:layout_marginEnd="32dp" android:layout_marginBottom="39dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" app:srcCompat="@drawable/ic_launcher_foreground" />-->
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnSnap"
-        android:layout_width="85dp"  android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="3dp" android:layout_marginEnd="194dp" android:layout_marginBottom="178dp"
-        android:onClick="takePhoto"  android:text="snap"
-        app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@+id/btnNext"
-        app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="310dp"
+        android:layout_marginBottom="177dp"
+        android:onClick="takePhoto"
+        android:text="@string/snap_string"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnNext"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.786" />
+
 
     <Button
         android:id="@+id/btnNext"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/btnSnap" android:layout_marginStart="194dp"
-        android:text="next" android:onClick="scrollPhotos"
-        app:layout_constraintBottom_toTopOf="@+id/btnSearch" app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnSnap" app:layout_constraintTop_toBottomOf="@+id/tvTimestamp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnSnap"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="194dp"
+        android:layout_marginEnd="58dp"
+        android:onClick="scrollPhotos"
+        android:text="@string/next_string"
+        app:layout_constraintBottom_toTopOf="@+id/btnSearch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnSnap"
+        app:layout_constraintTop_toBottomOf="@+id/tvTimestamp" />
 
     <Button
         android:id="@+id/btnPrev"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true" android:layout_alignParentBottom="true"
-        android:layout_marginEnd="82dp" android:layout_marginBottom="15dp"
-        android:text="prev" android:onClick="scrollPhotos"
-        tools:layout_editor_absoluteX="0dp" tools:layout_editor_absoluteY="622dp" />
-
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="61dp"
+        android:layout_marginBottom="14dp"
+        android:onClick="scrollPhotos"
+        android:text="@string/prev_string"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="622dp" />
 
     <TextView
         android:id="@+id/tvTimestamp"
@@ -58,13 +92,30 @@
         android:inputType="textPersonName"  android:text=""
         app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
+
     <Button
         android:id="@+id/btnSearch"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/ivGallery" android:layout_alignParentBottom="true"
-        android:layout_marginBottom="18dp" android:text="search"
-        tools:layout_editor_absoluteX="291dp" tools:layout_editor_absoluteY="635dp"
-        android:onClick="filter"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="307dp"
+        android:layout_marginBottom="14dp"
+        android:onClick="filter"
+        android:text="@string/search_string"
+        tools:layout_editor_absoluteX="291dp"
+        tools:layout_editor_absoluteY="635dp" />
+
+    <Button
+        android:id="@+id/btnSpeak"
+        android:onClick="speakScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="195dp"
+        android:layout_marginBottom="14dp"
+        android:text="@string/speak_string" />
 
     <TextView
         android:id="@+id/locationTV"
@@ -74,7 +125,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="205dp"
         android:layout_marginBottom="112dp"
-        android:text="Location:" />
+        android:text="@string/location_string" />
+
 
 
 </RelativeLayout>

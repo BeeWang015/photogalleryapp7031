@@ -1,17 +1,23 @@
 package com.example.photogallery;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,6 +27,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,26 +40,62 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.hardware.SensorManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.speech.RecognizerIntent;
+
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.Transformation;
+import android.view.animation.TranslateAnimation;
+
+import com.example.photogallery.Views.FramedImageView;
+
+public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, SensorEventListener {
+    private static final int SWIPE_MIN_DISTANCE = 100;
+    private static final int SWIPE_MIN_VELOCITY = 100;
     private static final int PERMISSION_REQUEST_CODE = 10;
     private LocationManager locationManager;
     private TextView locationTextView;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
+    static final int SPEAK_ACTIVITY_REQUEST_CODE = 5;
     String mCurrentPhotoPath;
     private ArrayList<String> photos = null;
     private int index = 0;
+    private float zRef = Float.MIN_VALUE;
+    private GestureDetector gestures;
+    private SensorManager sensorManager;
+    private Sensor sensor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Keep keyword typed
         SharedPreferences sharedPreferences = this.getSharedPreferences("searchKeyword", MODE_PRIVATE);
         String keyword = (sharedPreferences.getString("keyword", ""));
         Log.d("iFailure2", keyword + " Hi if you missed it");
 
+        // Swipe left and right gestures
+        gestures = new GestureDetector(this, this);
+
+        // Sensor for Rotational gestures
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        sensorManager.registerListener(this, sensor, 100);
+
+        // Latitude and Longitude services
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationTextView = findViewById(R.id.locationTV);
 
+        // Check for keyword search
         if (!keyword.equals("")) {
             Log.d("message3", keyword + " Hello I am find this");
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), keyword, 0.0, 0.0, 0.0, 0.0);
@@ -76,6 +119,114 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void goRight() {
+        index++;
+        if(index >= photos.size()) {
+            index = 0;
+        }
+        displayPhoto(photos.get(index));
+//        ImageView image = (ImageView) findViewById(R.id.ivGallery);
+        FramedImageView image = (FramedImageView) findViewById(R.id.fiv);
+
+        PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat(View.SCALE_X, 2);
+        PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 2);
+        ObjectAnimator scaleAnimation =  ObjectAnimator.ofPropertyValuesHolder(image, pvhX, pvhY);
+        scaleAnimation.setRepeatCount(1);
+        scaleAnimation.setRepeatMode(ValueAnimator.REVERSE);
+        ObjectAnimator translateAnimation = ObjectAnimator.ofFloat(image, View.TRANSLATION_X, 800);
+        translateAnimation.setRepeatCount(1);
+        translateAnimation.setRepeatMode(ValueAnimator.REVERSE);
+        ObjectAnimator rotateAnimation = ObjectAnimator.ofFloat(image ,
+                "rotation", 0f, 360f);
+        rotateAnimation.setDuration(1000); // miliseconds
+        AnimatorSet setAnimation = new AnimatorSet();
+        setAnimation.play(scaleAnimation).after(rotateAnimation).before(translateAnimation);
+        setAnimation.start();
+    }
+    public void goLeft() {
+        Animation animationXML = AnimationUtils.loadAnimation(this, R.anim.slideleft);
+        Animation animation = AnimationUtils.makeOutAnimation(this, true);
+        animation.setDuration(500);
+//        ImageView image = findViewById(R.id.ivGallery);
+        FramedImageView image = (FramedImageView) findViewById(R.id.fiv);
+        image.startAnimation(animation);
+
+        index--;
+        if(index < 0){
+            index = photos.size() - 1;
+        }
+        displayPhoto(photos.get(index));
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return gestures.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onDown(@NonNull MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(@NonNull MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(@NonNull MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(@Nullable MotionEvent motionEvent, @NonNull MotionEvent motionEvent1, float v, float v1) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(@NonNull MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        try {
+            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
+                    && Math.abs(velocityX) > SWIPE_MIN_VELOCITY) {
+                goLeft();
+            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+                    && Math.abs(velocityX) > SWIPE_MIN_VELOCITY) {
+                goRight();
+            }
+        } catch (Exception e) {    }
+        return false;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            float z = event.values[2];
+            if (zRef == Float.MIN_VALUE) {
+                zRef = z;
+                return;
+            } else {
+                float zChange = zRef - z;
+                if (zChange > 0.1f) {
+                    goRight();
+                } else if (zChange < -0.1f) {
+                    goLeft();
+                }
+            }
+        }
+    }
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+    public void speakScroll(View v) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+        startActivityForResult(intent, SPEAK_ACTIVITY_REQUEST_CODE);
+    }
     public void takePhoto(View v) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -115,15 +266,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayPhoto(String path) {
-        ImageView iv = (ImageView) findViewById(R.id.ivGallery);
+        //ImageView iv = (ImageView) findViewById(R.id.ivGallery);
+        FramedImageView iv = (FramedImageView) findViewById(R.id.fiv);
         TextView tv = (TextView) findViewById(R.id.tvTimestamp);
         EditText et = (EditText) findViewById(R.id.etCaption);
         if (path == null || path == "") {
-            iv.setImageResource(R.mipmap.ic_launcher);
+            //iv.setImageResource(R.mipmap.ic_launcher);
+            iv.setContent(null);
             et.setText("");
             tv.setText("");
         } else {
-            iv.setImageBitmap(BitmapFactory.decodeFile(path));
+            // iv.setImageBitmap(BitmapFactory.decodeFile(path));
+            iv.setContent(BitmapFactory.decodeFile(path));
             String[] attr = path.split("_");
             et.setText(attr[1]);
             tv.setText(attr[2]);
@@ -158,6 +312,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // Search Activity result
         if (requestCode == SEARCH_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -189,20 +345,40 @@ public class MainActivity extends AppCompatActivity {
                     displayPhoto(photos.get(index));
                 }
             }
-        }
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ImageView mImageView = findViewById(R.id.ivGallery);
-            mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
+        } // Photo snap result
+        else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+//            ImageView mImageView = findViewById(R.id.ivGallery);
+            FramedImageView mImageView = (FramedImageView) findViewById(R.id.fiv);
+//            mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
+            mImageView.setContent(BitmapFactory.decodeFile(mCurrentPhotoPath));
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0.0, 0.0, 0.0, 0.0);
+        } // Microphone activity result
+        else if (requestCode == SPEAK_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            try {
+                ArrayList<String> speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                String word = speech.get(0);
+                if(word.contains("right")) {
+                    goRight();
+                }
+                else if(word.contains("left")) {
+                    goLeft();
+                }
+            }
+            catch (Exception e){ }
         }
     }
 
     private void updatePhoto(String path, String caption) {
         String[] attr = path.split("_");
         if (attr.length >= 6) {
-            File to = new File(attr[0] + "_" + caption + "_" + attr[1] + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_" + attr[5]);
-            Log.d("updatePhotoName1", attr[4] + " should be latitude");
-            Log.d("updatePhotoName2", attr[5] + " should be longitude");
+            File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_" + attr[5] + "_" + attr[6]);
+            Log.d("updatePhotoName1", attr[0] + " should be path");
+            Log.d("updatePhotoName1", attr[1] + " should be caption");
+            Log.d("updatePhotoName2", attr[2] + " should be date");
+            Log.d("updatePhotoName3", attr[3] + " should be time");
+            Log.d("updatePhotoName4", attr[4] + " should be latitude");
+            Log.d("updatePhotoName5", attr[5] + " should be longitude");
+            Log.d("updatePhotoName6", attr[6] + " should be JPG");
             File from = new File(path);
             from.renameTo(to);
         }
