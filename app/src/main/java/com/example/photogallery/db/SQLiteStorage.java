@@ -3,6 +3,7 @@ package com.example.photogallery.db;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 
 import java.io.ByteArrayOutputStream;
@@ -40,7 +41,7 @@ public class SQLiteStorage {
         }
         else
             query = "select fullpath from photos where timestamp between '"+ startTimestamp + "' and '" + endTimestamp +
-                    "' and caption like '%" + keyword + "%' and latitude between '" + latitude_start + "' and '" + latitude_end + "' and longitude between '" +  longitude_start + "' and '" + longitude_end + "';";
+                    "' and caption like '%" + keyword + "%' and latitude between " + latitude_start + " and " + latitude_end + " and longitude between " +  longitude_start + " and " + longitude_end + ";";
         try{
             dbCursor = db.rawQuery(query, null);
             int fullpathCol = dbCursor.getColumnIndex("fullpath");
@@ -62,11 +63,27 @@ public class SQLiteStorage {
         if(!db.isOpen()) { return -1; }
         db.beginTransaction();
         try{
-            String sqlStmt = "insert into photos (timestamp, caption, latitude, longitude, fullpath, image) values ('"
-                    + timestamp + "','" + caption + "', " + latitude + ", " + longitude + ",'" + fullpath+", " + image + ");";
-            db.execSQL(sqlStmt);
+//            String sqlStmt = "insert into photos (timestamp, caption, latitude, longitude, fullpath, image) values ('"
+//                    + timestamp + "','" + caption + "', " + latitude + ", " + longitude + ", '" + fullpath+"', " + image + ");";
+//            db.execSQL(sqlStmt);
+//            db.setTransactionSuccessful();
+
+            String sqlStmt = "insert into photos (timestamp, caption, latitude, longitude, fullpath, image) values (?, ?, ?, ?, ?, ?)";
+            SQLiteStatement statement = db.compileStatement(sqlStmt);
+
+            statement.bindString(1, timestamp);
+            statement.bindString(2, caption);
+            statement.bindDouble(3, latitude);
+            statement.bindDouble(4, longitude);
+            statement.bindString(5, fullpath);
+            statement.bindBlob(6, image);
+
+            statement.executeInsert();
             db.setTransactionSuccessful();
-        } catch (Exception e) { return -1; }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1; }
         finally {
             db.endTransaction();
         }

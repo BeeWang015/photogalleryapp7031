@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PhotoGallery</string>
+    <string name="app_name">Java_PhotoGallery</string>
     <string name="keywords">Keywords: </string>
     <string name="longitude_start">Longitude start: </string>
     <string name="longitude_end">Longitude end: </string>

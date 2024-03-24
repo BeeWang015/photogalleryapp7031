@@ -1,17 +1,22 @@
 package com.example.photogallery;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -29,12 +34,14 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int PERMISSION_REQUEST_CODE = 10;
+    private LocationManager locationManager;
+    private TextView locationTextView;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SEARCH_ACTIVITY_REQUEST_CODE = 2;
     String mCurrentPhotoPath;
     private ArrayList<String> photos = null;
     private int index = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = this.getSharedPreferences("searchKeyword", MODE_PRIVATE);
         String keyword = (sharedPreferences.getString("keyword", ""));
         Log.d("iFailure2", keyword + " Hi if you missed it");
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationTextView = findViewById(R.id.locationTV);
 
         if (!keyword.equals("")) {
             Log.d("message3", keyword + " Hello I am find this");
@@ -61,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 displayPhoto(photos.get(index));
             }
         }
+
+        checkLocationPermission();
 
     }
 
@@ -82,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     public void scrollPhotos(View v) {
         updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
         switch (v.getId()) {
@@ -152,7 +165,9 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String from = (String) data.getStringExtra("STARTTIMESTAMP");
                     String to = (String) data.getStringExtra("ENDTIMESTAMP");
+                    assert from != null;
                     startTimestamp = format.parse(from);
+                    assert to != null;
                     endTimestamp = format.parse(to);
 
                 } catch (Exception ex) {
@@ -176,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ImageView mImageView = (ImageView) findViewById(R.id.ivGallery);
+            ImageView mImageView = findViewById(R.id.ivGallery);
             mImageView.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
             photos = findPhotos(new Date(Long.MIN_VALUE), new Date(), "", 0.0, 0.0, 0.0, 0.0);
         }
@@ -184,10 +199,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void updatePhoto(String path, String caption) {
         String[] attr = path.split("_");
-        if (attr.length >= 3) {
-            File to = new File(attr[0] + "_" + caption + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_" + attr[5] + "_" + attr[6]);
+        if (attr.length >= 6) {
+            File to = new File(attr[0] + "_" + caption + "_" + attr[1] + "_" + attr[2] + "_" + attr[3] + "_" + attr[4] + "_" + attr[5]);
             Log.d("updatePhotoName1", attr[4] + " should be latitude");
-            Log.d("updatePhotName2", attr[5] + " should be longitude");
+            Log.d("updatePhotoName2", attr[5] + " should be longitude");
             File from = new File(path);
             from.renameTo(to);
         }
@@ -233,6 +248,76 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(i, SEARCH_ACTIVITY_REQUEST_CODE);
     }
 
-    ;
+    private void requestLocationUpdates() {
+        // Check if permission is granted
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // Get the last known location
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (lastKnownLocation != null) {
+                updateLocationText(lastKnownLocation);
+            }
 
+            // Set up a location listener to get updated location
+            LocationListener locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    updateLocationText(location);
+                }
+
+                @Override
+                public void onProviderDisabled(@NonNull String provider) {
+                    // Handle provider disabled
+                }
+
+                @Override
+                public void onProviderEnabled(@NonNull String provider) {
+                    // Handle provider enabled
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                    // Handle status changed
+                }
+            };
+
+            // Request location updates
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }
+    }
+
+    private void updateLocationText(Location location) {
+        if (location != null) {
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            String text = "Latitude: " + latitude + "\nLongitude: " + longitude;
+            locationTextView.setText(text);
+        }
+    }
+
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+           // Asking for permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_REQUEST_CODE);
+        } else {
+            // Permission is already granted
+            requestLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                requestLocationUpdates();
+            } else {
+                // Permission denied
+            }
+        }
+    }
 }
