@@ -54,7 +54,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="194dp"
         android:layout_marginEnd="58dp"
-        android:onClick="scrollPhotos"
+        android:onClick="scrollNext"
         android:text="@string/next_string"
         app:layout_constraintBottom_toTopOf="@+id/btnSearch"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="61dp"
         android:layout_marginBottom="14dp"
-        android:onClick="scrollPhotos"
+        android:onClick="scrollPrev"
         android:text="@string/prev_string"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="622dp" />
@@ -123,8 +123,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="205dp"
-        android:layout_marginBottom="112dp"
+        android:layout_marginEnd="195dp"
+        android:layout_marginBottom="233dp"
         android:text="@string/location_string" />
 
 

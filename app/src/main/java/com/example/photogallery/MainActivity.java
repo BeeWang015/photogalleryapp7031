@@ -245,22 +245,22 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         }
     }
 
-    @SuppressLint("NonConstantResourceId")
-    public void scrollPhotos(View v) {
+    public void scrollNext(View view) {
         updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
-        switch (v.getId()) {
-            case R.id.btnPrev:
-                if (index > 0) {
-                    index--;
-                }
-                break;
-            case R.id.btnNext:
-                if (index < (photos.size() - 1)) {
-                    index++;
-                }
-                break;
-            default:
-                break;
+        if (index < (photos.size() - 1)) {
+            index++;
+        } else if( index >= (photos.size() - 1)) {
+            index = 0;
+        }
+        displayPhoto(photos.get(index));
+    }
+
+    public void scrollPrev(View view) {
+        updatePhoto(photos.get(index), ((EditText) findViewById(R.id.etCaption)).getText().toString());
+        if(index > 0) {
+            index--;
+        }else if (index <= 0) {
+            index = photos.size() - 1;
         }
         displayPhoto(photos.get(index));
     }
